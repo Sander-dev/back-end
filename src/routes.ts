@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { authenticateToken } from './middleware';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -57,6 +58,33 @@ router.post('/login', async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ error: 'Erro no servidor.' });
+    }
+});
+
+router.get('/welcome', authenticateToken, async (req, res) => {
+    try {
+        if (!req.user || typeof req.user === 'string' || !('id' in req.user)) {
+            return res.status(401).json({ error: 'Usuário não autenticado.' });
+        }
+
+        const userId = req.user.id;
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { name: true, email: true },
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
+        }
+
+        res.json({
+            message: 'Bem-vindo ao sistema!',
+            name: user.name,
+            email: user.email,
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar informações do usuário.' });
     }
 });
 
