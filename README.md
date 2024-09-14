@@ -10,6 +10,7 @@ Configuração do Ambiente
 1. Clone o Repositório: 
 
 git clone https://github.com/Sander-dev/fbenevides-back-end.git
+
    cd fbenevides-back-end
 
 2. Instale as Dependências.
