@@ -46,7 +46,7 @@ npx prisma migrate dev --name init
 5. Inicie o Servidor
 Para iniciar o servidor, execute o seguinte comando:
 
-npm start
+npm run dev
 
 O servidor estará disponível em http://localhost:4000.
 
@@ -57,6 +57,5 @@ O Swagger está configurado para documentar a API. Você pode acessá-lo em http
 
 
 Scripts Disponíveis
-npm start: Inicia o servidor.
-npm run dev: Inicia o servidor em modo de desenvolvimento (com hot reloading).
+npm run dev: Inicia o servidor em modo de desenvolvimento.
 npx prisma migrate dev: Aplica as migrações e atualiza o banco de dados.
