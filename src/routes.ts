@@ -7,6 +7,81 @@ import { authenticateToken } from './middleware';
 const router = Router();
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - password
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID do usuário
+ *         name:
+ *           type: string
+ *           description: Nome do usuário
+ *         email:
+ *           type: string
+ *           description: Email do usuário
+ *         password:
+ *           type: string
+ *           description: Senha do usuário
+ */
+
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     summary: Registra um novo usuário
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "John Doe"
+ *               email:
+ *                 type: string
+ *                 example: "john.doe@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Email inválido ou senha com menos de 6 caracteres
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "E-mail inválido ou A senha deve ter pelo menos 6 caracteres."
+ *       409:
+ *         description: Email já registrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Email já registrado."
+ */
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -34,6 +109,67 @@ router.post('/register', async (req, res) => {
     }
 });
 
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Faz login de um usuário
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "john.doe@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *     responses:
+ *       200:
+ *         description: Login bem-sucedido com token JWT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       400:
+ *         description: Email inválido ou senha com menos de 6 caracteres
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "E-mail inválido ou A senha deve ter pelo menos 6 caracteres."
+ *       401:
+ *         description: Credenciais inválidas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Credenciais inválidas"
+ *       500:
+ *         description: Erro no servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erro no servidor."
+ */
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -61,6 +197,62 @@ router.post('/login', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /welcome:
+ *   get:
+ *     summary: Retorna uma mensagem de boas-vindas
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Mensagem de boas-vindas com detalhes do usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Bem-vindo ao sistema!"
+ *                 name:
+ *                   type: string
+ *                   example: "John Doe"
+ *                 email:
+ *                   type: string
+ *                   example: "john.doe@example.com"
+ *       401:
+ *         description: Token JWT inválido ou ausente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Usuário não autenticado."
+ *       404:
+ *         description: Usuário não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Usuário não encontrado."
+ *       500:
+ *         description: Erro ao buscar informações do usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erro ao buscar informações do usuário."
+ */
 router.get('/welcome', authenticateToken, async (req, res) => {
     try {
         if (!req.user || typeof req.user === 'string' || !('id' in req.user)) {
