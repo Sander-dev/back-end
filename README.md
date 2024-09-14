@@ -47,6 +47,7 @@ npx prisma migrate dev --name init
 Para iniciar o servidor, execute o seguinte comando:
 
 npm start
+
 O servidor estará disponível em http://localhost:4000.
 
 6. Teste o Servidor
