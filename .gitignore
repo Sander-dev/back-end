@@ -1,0 +1,10 @@
+# Dependências
+node_modules/
+
+# Arquivos de configuração e lock
+.env
+prisma/migrations/migration_lock.toml
+
+# Logs e caches
+*.log
+.cache/
